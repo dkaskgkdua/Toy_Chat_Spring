@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Chats">
+	
+	<insert id="insert" parameterType="Chat">
+		insert into chat
+		values(#{id}, #{password}, #{savefile}, #{originalfile})
+	</insert>
+	<select id="idcheck" parameterType="String" resultType="Chat">
+		select *
+		from chat
+		where id = #{inputid}
+	</select>
+	<select id="idcheck2" parameterType="Map" resultType="Chat">
+		select count(*)
+		from chat
+		where id = #{id} and password = #{password}
+	</select>
+</mapper>
