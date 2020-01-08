@@ -2,6 +2,7 @@ package com.naver.chattest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.websocket.OnClose;
@@ -20,8 +21,8 @@ import com.naver.chattest.domain.Cart;
 @Controller
 @ServerEndpoint(value = "/boot.do") // 클라이언트가 접속할 서버 주소
 public class EchoHandler2 {
-
-   private static final List<Cart> sessionList = new ArrayList<Cart>();
+	
+   public static final List<Cart> sessionList = Collections.synchronizedList(new ArrayList<Cart>());
    private static final Logger logger = LoggerFactory.getLogger(EchoHandler2.class);
 
    public EchoHandler2() {
@@ -39,9 +40,10 @@ public class EchoHandler2 {
    public void onOpen2(Session session) {
       logger.info("Open session id:" + session.getId());
       logger.info("session 쿼리 스트링 : " + session.getQueryString());
-      
       String queryString = session.getQueryString();
       String id = queryString.substring(queryString.indexOf("=")+1, queryString.indexOf("&"));
+           
+     
       System.out.println("id = " + id);
       String filename = queryString.substring(queryString.indexOf("/"));
       Cart cart = new Cart();

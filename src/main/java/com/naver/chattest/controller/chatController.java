@@ -10,10 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,13 +24,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.naver.chattest.EchoHandler2;
+import com.naver.chattest.domain.Cart;
 import com.naver.chattest.domain.Chat;
 import com.naver.chattest.service.MemberService;
-import com.sun.media.jfxmedia.logging.Logger;
 
 @Controller
 public class chatController {
-
+	private static final Logger logger = LoggerFactory.getLogger(chatController.class);
 	@Autowired
 	private MemberService memberservice;
 
@@ -66,6 +70,18 @@ public class chatController {
 		session.invalidate();
 		return "_2/loginForm";
 	}
+	//loginProcess를 get방식으로 접근하면 다시 로그인 하도록 페이지를 이동한다.
+	@GetMapping(value = "/loginProcess.net")
+	public String login2() {
+		logger.info("login2()");
+		return "redirect:login";
+	}
+	@GetMapping(value = "/joinProcess")
+	public String login3() {
+		logger.info("login3()");
+		return "redirect:login";
+	}
+	
 	@RequestMapping(value = "/loginProcess.net", method = RequestMethod.POST)
 	public ModelAndView loginProcess(@RequestParam("id") String id, @RequestParam("password") String password,
 								ModelAndView mv, HttpServletRequest request,	HttpServletResponse response, HttpSession session) throws Exception {
@@ -74,6 +90,14 @@ public class chatController {
 		
 		
 		if(result == 1) {
+			for(Cart cart : EchoHandler2.sessionList) {
+				if(cart.getId().equals(id)) {
+					response.setContentType("text/html;charset=utf-8");
+					response.getWriter()
+					.print("<script>alert('이미 소켓 연결중');history.back();</script>");
+					return null;
+				}
+			}
 			session.setAttribute("id", id);
 			mv.setViewName("_2/boot_sample");
 			mv.addObject("name", id);
